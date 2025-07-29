@@ -7,15 +7,17 @@ import com.example.springmvc.practise.repo.UsersRepo;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import javax.sql.DataSource;
 import java.util.List;
 
 @Service
 @AllArgsConstructor
 public class UsersService {
     private final UsersRepo userRepo;
+
+    private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
 
     public List<Users> getAll() {
         return userRepo.findAll();
@@ -40,8 +42,10 @@ public class UsersService {
         try {
             Users newuser = new Users();
             newuser.setName(user.getName());
-            newuser.setPassword(user.getPassword());
+//            newuser.setPassword(user.getPassword()); // this is default method
+            newuser.setPassword(encoder.encode(user.getPassword()));
 
+            // adding bcrypt method to convert the password into hashing
             Users savedUser = userRepo.save(newuser);
             return new UserModel(savedUser.getId(), savedUser.getName(), savedUser.getPassword());
         } catch (DataIntegrityViolationException e) {
