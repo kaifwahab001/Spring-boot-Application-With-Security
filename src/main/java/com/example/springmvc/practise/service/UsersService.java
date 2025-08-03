@@ -27,20 +27,6 @@ public class UsersService {
         return userRepo.findAll();
     }
 
-//    @Transactional
-//    public UserModel createUser(UserModel user) {
-//        Users newuser = new Users();
-
-    /// /        newuser.setId(user.getId());
-//        newuser.setName(user.getName());
-//        newuser.setPassword(user.getPassword());
-//
-//        userRepo.save(newuser);
-//        System.out.println("user saved");
-//
-//        return new UserModel(newuser.getId(), newuser.getName(), newuser.getPassword());
-//    }
-
     @Transactional
     public UserModel createUser(UserModel user) {
         try {

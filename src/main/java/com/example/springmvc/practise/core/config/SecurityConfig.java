@@ -3,9 +3,11 @@ package com.example.springmvc.practise.core.config;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -25,11 +27,12 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
          return http
                  .csrf(AbstractHttpConfigurer::disable)
-                 .authorizeHttpRequests(auth-> auth
+                 .authorizeHttpRequests(auth -> auth
+                         .requestMatchers("/login", "/register")
+                         .permitAll()
                          .requestMatchers("/public/**").permitAll()
                          .anyRequest().authenticated()
                  )
-                 .formLogin(Customizer.withDefaults())
                  .httpBasic(Customizer.withDefaults())
                  .build();
     }
@@ -42,10 +45,22 @@ public class SecurityConfig {
         return provider;
     }
 
+
+
+    // this is for providing the authentication manager which call the authentication provider
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
+        return config.getAuthenticationManager();
+    }
+
+
+
     @Bean
     public PasswordEncoder encoder(){
         return new BCryptPasswordEncoder(12);  // bcrypt encoder that length is 12
     }
+
+
 
     // for custom username and password
 //    @Bean
