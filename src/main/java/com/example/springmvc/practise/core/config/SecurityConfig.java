@@ -16,12 +16,16 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
     @Autowired
     private UserDetailsService userDetailsService;
+
+    @Autowired
+    private JwtFilter jwtFilter;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -34,6 +38,7 @@ public class SecurityConfig {
                          .anyRequest().authenticated()
                  )
                  .httpBasic(Customizer.withDefaults())
+                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)  // this is for adding jwt filter before username password authentication filter
                  .build();
     }
 
